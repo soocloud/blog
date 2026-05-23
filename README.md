@@ -24,6 +24,7 @@
 - [폴더 구조](#폴더-구조)
 - [주요 설정 파일](#주요-설정-파일)
 - [배포 워크플로우](#배포-워크플로우)
+- [댓글 (Giscus)](#댓글-giscus)
 - [할 일 (TODO)](#할-일-todo)
 - [라이선스 / 크레딧](#라이선스--크레딧)
 
@@ -288,6 +289,34 @@ flowchart LR
 
 > 미리보기 배포: `main` 외 브랜치/PR도 자동으로 임시 URL 발급됨.
 
+## 댓글 (Giscus)
+
+[Giscus](https://giscus.app)로 GitHub Discussions 기반 댓글을 운영합니다. 별도 DB·서버 없이 모든 댓글이 본 레포의 Discussions에 저장됩니다.
+
+### 동작 원리
+
+- 글 URL의 `pathname`을 키로 사용 → 글마다 Discussion thread 1개 자동 생성
+- 카테고리: **Comments** (Announcement 형식 — 일반 사용자가 임의 thread 생성 불가, 댓글·리액션만 가능)
+- 다크모드 토글 시 `MutationObserver`로 iframe에 `setConfig` 메시지 전송 → 테마 자동 동기화
+- `data-loading="lazy"` — 글 하단 도달 시에만 로드 (초기 로딩 가벼움)
+
+### 댓글 받는 법
+
+1. <https://github.com/soocloud/blog> 우측 상단 **Watch** → **Custom** → ☑ **Discussions** 체크
+2. 새 댓글 달리면 GitHub 알림 + 이메일 수신
+
+### 댓글 관리
+
+- 스팸/부적절 댓글: <https://github.com/soocloud/blog/discussions> → 해당 thread → 댓글 우측 `⋯` → **Hide** / **Delete**
+- thread 잠그기: thread 우측 `⋯` → **Lock conversation** (해당 글 추가 댓글 차단)
+- 차단: 사용자 프로필 → **Block user**
+
+### 설정 변경
+
+- 컴포넌트: [`src/components/Giscus.astro`](src/components/Giscus.astro)
+- `data-repo-id` · `data-category-id`는 <https://giscus.app> 에서 재발급 가능
+- 레포 옮기면 두 값 모두 갱신 필요 (이전 댓글은 함께 마이그레이션되지 않음)
+
 ## 할 일 (TODO)
 
 ### 🔧 자질구레한 마무리
@@ -296,7 +325,6 @@ flowchart LR
 
 ### 🚀 기능 확장
 
-- [ ] **Giscus** 댓글 (GitHub Discussions 기반, 무료)
 - [ ] **Cloudflare Web Analytics** 연결 (쿠키리스, 무료)
 
 ### 🌐 다국어 본격 도입
