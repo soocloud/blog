@@ -5,6 +5,7 @@ title: Hello, SooBlog
 slug: hello-sooblog
 featured: true
 draft: false
+category: life
 tags:
   - meta
 description: First post — why this blog exists and what you can expect here.

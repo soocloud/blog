@@ -18,6 +18,7 @@
 - [기술 스택](#기술-스택)
 - [로컬 개발](#로컬-개발)
 - [글 작성하기](#글-작성하기)
+- [카테고리 정책](#카테고리-정책)
 - [수식 쓰기 (KaTeX)](#수식-쓰기-katex)
 - [다이어그램 그리기 (Mermaid)](#다이어그램-그리기-mermaid)
 - [폴더 구조](#폴더-구조)
@@ -74,8 +75,7 @@ pubDatetime: 2026-05-23T10:00:00+09:00   # JST 기준
 title: 글 제목
 slug: url-slug                            # 파일명과 일치시키는 게 가장 깔끔
 featured: false                           # 메인 상단 고정 여부
-draft: false                              # true면 빌드에서 제외
-tags:
+draft: false                              # true면 빌드에서 제외category: dev                             # cloud | dev | ai | life (필수, 1개)tags:
   - tag1
   - tag2
 description: 1~2줄 요약. OG 카드와 RSS에 노출됩니다.
@@ -96,6 +96,27 @@ description: 1~2줄 요약. OG 카드와 RSS에 노출됩니다.
 | (없음) | 영어 글 |
 
 > 필요 시 [`astro:i18n`](https://docs.astro.build/en/recipes/i18n/) 기반 라우팅으로 마이그레이션 예정.
+
+## 카테고리 정책
+
+글은 **하나의 `category`(상위 분류, 필수) + 자유 `tags`(세부)** 구조로 관리합니다.
+
+| `category` | 레이블 | 의미 | 예시 글 |
+|---|---|---|---|
+| `cloud` | Cloud | Azure / GCP / AWS 등 퍼블릭 클라우드 | Bicep 구축기, GCP Cloud Run vs Cloud Functions |
+| `dev` | Dev | 언어·프레임워크·도구 | TypeScript 타입 트릭, VS Code 설정 |
+| `ai` | AI | AI / LLM / 에이전트 | Foundry 소개, RAG 구축기 |
+| `life` | Life | 일상·회고·잡담 | 도쿄 생활, 연말 회고 |
+
+**원칙**
+- `category`는 반드시 **1개만** 선택. 두 개에 걸치면 더 강한 쪽으로.
+- 새 카테고리를 쉬틀게 늘리지 않습니다 (네비게이션 안정성). 추가 필요 시 [`src/content.config.ts`](src/content.config.ts) 의 `CATEGORIES` 배열 수정.
+- `tags`는 자유롭게, 많아도 OK (관련 글 탐색·연관 추천에 활용).
+
+브라우징 경로:
+- `/categories` — 전체 카테고리 목록
+- `/categories/<category>/` — 해당 카테고리의 글 목록 (페이지네이션 포함)
+- `/tags`, `/tags/<tag>/` — 세부 관심사 단위
 
 ## 수식 쓰기 (KaTeX)
 
