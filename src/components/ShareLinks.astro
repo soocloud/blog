@@ -5,22 +5,92 @@ import LinkButton from "./LinkButton.astro";
 const URL = Astro.url;
 ---
 
-{
-  SHARE_LINKS.length > 0 && (
-    <div class="flex flex-none flex-col items-center justify-center gap-1 md:items-start">
-      <span class="italic">Share this post on:</span>
-      <div class="text-center">
-        {SHARE_LINKS.map(social => (
-          <LinkButton
-            href={`${social.href + URL}`}
-            class="scale-90 p-2 hover:rotate-6 sm:p-1"
-            title={social.linkTitle}
-          >
-            <social.icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
-            <span class="sr-only">{social.linkTitle}</span>
-          </LinkButton>
-        ))}
-      </div>
-    </div>
-  )
-}
+<div
+  class="flex flex-wrap items-center gap-2"
+  data-pagefind-ignore
+>
+  <span class="mr-1 text-sm font-medium opacity-80">Share</span>
+
+  {
+    SHARE_LINKS.map(social => (
+      <LinkButton
+        href={`${social.href + URL}`}
+        class="rounded-md p-2 transition hover:bg-accent/10 hover:text-accent"
+        title={social.linkTitle}
+      >
+        <social.icon class="inline-block size-5 fill-transparent stroke-current stroke-2" />
+        <span class="sr-only">{social.linkTitle}</span>
+      </LinkButton>
+    ))
+  }
+
+  <button
+    id="copy-link-btn"
+    type="button"
+    class="group inline-flex items-center gap-1 rounded-md p-2 transition hover:bg-accent/10 hover:text-accent"
+    title="Copy link"
+    data-url={URL.toString()}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="size-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path
+        class="icon-link"
+        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+      ></path>
+      <path
+        class="icon-link"
+        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+      ></path>
+      <path class="icon-check hidden" d="M20 6 9 17l-5-5"></path>
+    </svg>
+    <span class="copy-label text-xs">Copy link</span>
+    <span class="copied-label hidden text-xs">Copied!</span>
+  </button>
+</div>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const btn = document.getElementById("copy-link-btn") as HTMLButtonElement | null;
+    if (!btn) return;
+
+    btn.addEventListener("click", async () => {
+      const url = btn.dataset.url ?? location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+
+      const linkIcons = btn.querySelectorAll(".icon-link");
+      const checkIcon = btn.querySelector(".icon-check");
+      const copyLabel = btn.querySelector(".copy-label");
+      const copiedLabel = btn.querySelector(".copied-label");
+
+      linkIcons.forEach(el => el.classList.add("hidden"));
+      checkIcon?.classList.remove("hidden");
+      copyLabel?.classList.add("hidden");
+      copiedLabel?.classList.remove("hidden");
+
+      setTimeout(() => {
+        linkIcons.forEach(el => el.classList.remove("hidden"));
+        checkIcon?.classList.add("hidden");
+        copyLabel?.classList.remove("hidden");
+        copiedLabel?.classList.add("hidden");
+      }, 1500);
+    });
+  });
+</script>
