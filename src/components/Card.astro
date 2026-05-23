@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { slugifyStr } from "@/utils/slugify";
 import { getPath } from "@/utils/getPath";
+import { CATEGORY_LABELS } from "@/content.config";
 import Datetime from "./Datetime.astro";
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 
-const { title, description, ...props } = data;
+const { title, description, category, ...props } = data;
 ---
 
 <li class="my-6">
@@ -26,6 +27,15 @@ const { title, description, ...props } = data;
       {title}
     </Heading>
   </a>
-  <Datetime {...props} />
+  <div class="mt-1 flex items-center gap-2">
+    <a
+      href={`/categories/${category}/`}
+      class="inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium hover:text-accent"
+      onclick="event.stopPropagation()"
+    >
+      {CATEGORY_LABELS[category]}
+    </a>
+    <Datetime {...props} />
+  </div>
   <p>{description}</p>
 </li>

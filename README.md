@@ -68,21 +68,46 @@ npm run preview
 
 ### Front matter 템플릿
 
+#### 필수 필드만 (최소)
+
 ```markdown
 ---
-author: Dongsoo
-pubDatetime: 2026-05-23T10:00:00+09:00   # JST 기준
 title: 글 제목
-slug: url-slug                            # 파일명과 일치시키는 게 가장 깔끔
-featured: false                           # 메인 상단 고정 여부
-draft: false                              # true면 빌드에서 제외category: dev                             # cloud | dev | ai | life (필수, 1개)tags:
+description: 1~2줄 요약. OG 카드와 RSS, 검색 결과에 노출됩니다.
+pubDatetime: 2026-05-23T10:00:00+09:00   # JST 기준 ISO8601
+category: dev                            # cloud | dev | ai | life (1개)
+tags:
   - tag1
   - tag2
-description: 1~2줄 요약. OG 카드와 RSS에 노출됩니다.
 ---
 
 본문…
 ```
+
+#### 전체 필드 (옵션 포함)
+
+```markdown
+---
+title: 글 제목
+description: 1~2줄 요약
+pubDatetime: 2026-05-23T10:00:00+09:00
+modDatetime: 2026-05-25T14:00:00+09:00   # (선택) 수정 시각
+author: Dongsoo                          # (선택) 기본값은 SITE.author
+category: dev                            # cloud | dev | ai | life
+tags:
+  - tag1
+featured: false                          # (선택) 메인 상단 고정
+draft: false                             # (선택) true면 빌드 제외
+ogImage: ./cover.png                     # (선택) 로컬 이미지 또는 절대 URL.
+                                         #        미지정 시 자동 OG 생성
+canonicalURL: https://example.com/orig   # (선택) 원본 글로 정규화
+hideEditPost: false                      # (선택) "Edit on GitHub" 숨김
+timezone: Asia/Tokyo                     # (선택) 날짜 표시 타임존 override
+---
+```
+
+> 스키마는 [`src/content.config.ts`](src/content.config.ts)에서 Zod로 강제됩니다.
+> 오타나 빠진 필드는 **`npm run build`가 즉시 에러로 알려줍니다**.
 
 ### 다국어 표시 규칙 (임시)
 
@@ -110,7 +135,7 @@ description: 1~2줄 요약. OG 카드와 RSS에 노출됩니다.
 
 **원칙**
 - `category`는 반드시 **1개만** 선택. 두 개에 걸치면 더 강한 쪽으로.
-- 새 카테고리를 쉬틀게 늘리지 않습니다 (네비게이션 안정성). 추가 필요 시 [`src/content.config.ts`](src/content.config.ts) 의 `CATEGORIES` 배열 수정.
+- 새 카테고리 필요 시 [`src/content.config.ts`](src/content.config.ts) 의 `CATEGORIES` 배열 수정.
 - `tags`는 자유롭게, 많아도 OK (관련 글 탐색·연관 추천에 활용).
 
 브라우징 경로:
