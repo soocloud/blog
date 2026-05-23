@@ -8,16 +8,18 @@ draft: false
 category: life
 tags:
   - meta
-description: First post — why this blog exists and what you can expect here.
+description: Why this blog exists and what you can expect here.
 ---
 
 > If I don't write it down, I forget it.
 
-## Why another blog
+## Why I write here
 
-Notes that live in chat threads, internal wikis, or random Notion pages
-have a way of disappearing exactly when I need them again.
-So this time I'm putting them on a **public static site** I actually own.
+A few reasons all at once:
+
+- To keep **writing in English, Korean, and Japanese** as part of my daily life.
+- To leave a **public, verifiable trail** of the work I've done and the things I've thought about — something that's surprisingly hard to prove in a job market otherwise.
+- To **organize what I've learned**, share it with others, and — eventually — turn it into a book.
 
 ## What I'll write about
 
@@ -31,38 +33,11 @@ they're the clearer way to explain something.
 
 ## Languages
 
-The site is in **English** by default, but posts can be in **Korean** or
-**Japanese** when that fits the topic or the audience better.
+Posts here appear in **English**, **Korean**, or **Japanese** — whichever fits
+the topic and audience best.
 
-## Stack
-
-- [Astro](https://astro.build/) + [AstroPaper](https://github.com/satnaing/astro-paper) theme
-- Deployed on [Cloudflare Pages](https://pages.cloudflare.com/)
-- Content lives in [GitHub](https://github.com/soocloud/blog)
-
-Starting small and adding features only when I actually need them.
-
-## What this blog can render
-
-### Diagrams (Mermaid)
-
-```mermaid
-flowchart LR
-    A["Local edit"] -->|git push| B["GitHub: soocloud/blog"]
-    B -->|webhook| C["Cloudflare Pages build"]
-    C -->|success| D["sooblog.pages.dev"]
-    C -->|failure| E["Build logs"]
-```
-
-### Math (KaTeX)
-
-Inline: $E = mc^2$
-
-Block:
-
-$$
-\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
-$$
+If you'd like a post translated, leave a comment with **ENG / KOR / JAP** and
+I'll add a version.
 
 — Dongsoo
 
