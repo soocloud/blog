@@ -41,4 +41,27 @@ The site is in **English** by default, but posts can be in **Korean** or
 
 Starting small and adding features only when I actually need them.
 
+## What this blog can render
+
+### Diagrams (Mermaid)
+
+```mermaid
+flowchart LR
+    A[Local edit] -->|git push| B[GitHub: soocloud/blog]
+    B -->|webhook| C[Cloudflare Pages build]
+    C -->|success| D[sooblog.pages.dev]
+    C -->|failure| E[Build logs]
+```
+
+### Math (KaTeX)
+
+Inline: $E = mc^2$
+
+Block:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
+$$
+
 — Dongsoo
+

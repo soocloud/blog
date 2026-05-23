@@ -35,6 +35,8 @@
 | 스타일 | Tailwind CSS v4 |
 | 콘텐츠 | Markdown / MDX + Content Collections |
 | 코드 하이라이트 | Shiki (`min-light` / `night-owl`) |
+| **수식** | [KaTeX](https://katex.org/) (빌드 시 HTML로 렌더링, 클라이언트 JS 0) |
+| **다이어그램** | [Mermaid](https://mermaid.js.org/) (필요한 페이지에서만 lazy-load) |
 | 검색 | [Pagefind](https://pagefind.app/) (정적 클라이언트 검색) |
 | 호스팅 | [Cloudflare Pages](https://pages.cloudflare.com/) (무제한 대역폭, 무료) |
 | CI/CD | GitHub push → Cloudflare 자동 빌드·배포 |
@@ -92,6 +94,49 @@ description: 1~2줄 요약. OG 카드와 RSS에 노출됩니다.
 | (없음) | 영어 글 |
 
 > 필요 시 [`astro:i18n`](https://docs.astro.build/en/recipes/i18n/) 기반 라우팅으로 마이그레이션 예정.
+
+## 수식 쓰기 (KaTeX)
+
+마크다운에서 바로 LaTeX 문법을 쓰면 빌드 시 HTML로 렌더링됩니다 (클라이언트 JS 불필요).
+
+### 인라인
+
+```markdown
+아인슈타인의 점질량-에너지 등가 식 $E = mc^2$ 은 유명합니다.
+```
+
+### 블록
+
+````markdown
+$$
+\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
+$$
+````
+
+> KaTeX 지원 문법은 [공식 문서](https://katex.org/docs/supported.html) 참고.
+
+## 다이어그램 그리기 (Mermaid)
+
+⁠```mermaid⁠ 코드 블록으로 작성. 다이어그램이 있는 페이지에서만 Mermaid 라이브러리(~500KB)가 lazy-load 됩니다.
+
+````markdown
+```mermaid
+flowchart LR
+    A[Local edit] -->|git push| B[GitHub]
+    B -->|webhook| C[Cloudflare build]
+    C --> D[sooblog.pages.dev]
+```
+````
+
+지원하는 다이어그램 종류는 [Mermaid 공식 문서](https://mermaid.js.org/intro/) 참고:
+
+- `flowchart` / `graph` — 순서도
+- `sequenceDiagram` — 시퀀스 다이어그램
+- `classDiagram` / `erDiagram` — 클래스 / ER
+- `stateDiagram-v2` — 상태 전이
+- `gantt`, `pie`, `mindmap`, `timeline` …
+
+> 다크 모드 토글 시 다이어그램이 자동으로 재렌더링됩니다.
 
 ### 배포 흐름 (글 1개 올리기)
 
@@ -168,14 +213,14 @@ flowchart LR
 
 ### 🔧 자질구레한 마무리
 
-- [ ] [`src/constants.ts`](src/constants.ts) Mail 주소를 실제 이메일로 교체
-- [ ] [`public/astropaper-og.jpg`](public/astropaper-og.jpg) 본인 OG 이미지로 교체
+- [x] [`src/constants.ts`](src/constants.ts) Mail 주소를 실제 이메일로 교체
+- [x] [`public/astropaper-og.jpg`](public/astropaper-og.jpg) 본인 OG 이미지로 교체
 - [ ] [`public/favicon.svg`](public/favicon.svg) / `favicon.ico` 본인 파비콘으로 교체
 
 ### 🚀 기능 확장
 
-- [ ] **Mermaid** 다이어그램 통합 (`rehype-mermaid`)
-- [ ] **KaTeX** 수식 통합
+- [x] **Mermaid** 다이어그램 통합 (lazy-load)
+- [x] **KaTeX** 수식 통합 (빌드 타임 렌더링)
 - [ ] **Giscus** 댓글 (GitHub Discussions 기반, 무료)
 - [ ] **Cloudflare Web Analytics** 연결 (쿠키리스, 무료)
 

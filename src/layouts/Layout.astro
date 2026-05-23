@@ -134,6 +134,49 @@ const structuredData = {
   </head>
   <body>
     <slot />
+
+    <!--
+      Mermaid lazy-loader.
+      - Only loads the mermaid bundle (~500KB) when a page actually contains a `.mermaid` block.
+      - Re-runs on Astro view transitions (ClientRouter) so SPA-style navigation works.
+      - Picks light/dark theme based on the current `data-theme` on <html>.
+    -->
+    <script>
+      async function renderMermaid() {
+        const nodes = document.querySelectorAll<HTMLElement>(
+          "pre.mermaid:not([data-processed])"
+        );
+        if (nodes.length === 0) return;
+
+        const { default: mermaid } = await import("mermaid");
+        const theme =
+          document.documentElement.getAttribute("data-theme") === "dark"
+            ? "dark"
+            : "default";
+
+        mermaid.initialize({ startOnLoad: false, theme, securityLevel: "loose" });
+        await mermaid.run({ nodes: Array.from(nodes) });
+      }
+
+      // initial load
+      renderMermaid();
+      // Astro view-transition navigation
+      document.addEventListener("astro:page-load", renderMermaid);
+      // re-render on theme toggle
+      const observer = new MutationObserver(() => {
+        document
+          .querySelectorAll<HTMLElement>("pre.mermaid[data-processed]")
+          .forEach(el => {
+            el.removeAttribute("data-processed");
+            el.innerHTML = el.getAttribute("data-source") ?? el.textContent ?? "";
+          });
+        renderMermaid();
+      });
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+    </script>
   </body>
 </html>
 

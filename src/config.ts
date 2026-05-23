@@ -2,9 +2,9 @@ export const SITE = {
   website: "https://sooblog.pages.dev/",
   author: "Dongsoo",
   profile: "https://github.com/soocloud",
-  desc: "클라우드·AI·웹 개발에 대한 긴 글과 도표 모음 (KO / EN / JA)",
+  desc: "Dongsoo's tech blog about cloud, and software engineering.",
   title: "SooBlog",
-  ogImage: "astropaper-og.jpg", // TODO: 본인 OG 이미지로 교체 (public/ 폴더)
+  ogImage: "astropaper-og.jpg", 
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
