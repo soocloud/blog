@@ -18,6 +18,8 @@
 - [기술 스택](#기술-스택)
 - [로컬 개발](#로컬-개발)
 - [글 작성하기](#글-작성하기)
+- [수식 쓰기 (KaTeX)](#수식-쓰기-katex)
+- [다이어그램 그리기 (Mermaid)](#다이어그램-그리기-mermaid)
 - [폴더 구조](#폴더-구조)
 - [주요 설정 파일](#주요-설정-파일)
 - [배포 워크플로우](#배포-워크플로우)
@@ -117,16 +119,18 @@ $$
 
 ## 다이어그램 그리기 (Mermaid)
 
-⁠```mermaid⁠ 코드 블록으로 작성. 다이어그램이 있는 페이지에서만 Mermaid 라이브러리(~500KB)가 lazy-load 됩니다.
+` ```mermaid ` 코드 블록으로 작성. 다이어그램이 있는 페이지에서만 Mermaid 라이브러리(~500KB)가 lazy-load 됩니다.
 
 ````markdown
 ```mermaid
 flowchart LR
-    A[Local edit] -->|git push| B[GitHub]
-    B -->|webhook| C[Cloudflare build]
-    C --> D[sooblog.pages.dev]
+    A["Local edit"] -->|git push| B["GitHub: soocloud/blog"]
+    B -->|webhook| C["Cloudflare build"]
+    C --> D["sooblog.pages.dev"]
 ```
 ````
+
+> ⚠️ **라벨 따옴표 주의**: 라벨 안에 `:`, `/`, `(`, `)`, `#`, `;` 가 들어가면 **반드시** `"…"` 로 감싸야 합니다. 안 그러면 "Syntax error in text"가 뜨고 다이어그램이 렌더링되지 않습니다.
 
 지원하는 다이어그램 종류는 [Mermaid 공식 문서](https://mermaid.js.org/intro/) 참고:
 
@@ -191,10 +195,10 @@ git push
 
 ```mermaid
 flowchart LR
-    A[로컬 편집] -->|git push| B[GitHub: soocloud/blog]
-    B -->|webhook| C[Cloudflare Pages 빌드]
-    C -->|성공| D[sooblog.pages.dev 배포]
-    C -->|실패| E[Build log 확인]
+    A["로컬 편집"] -->|git push| B["GitHub: soocloud/blog"]
+    B -->|webhook| C["Cloudflare Pages 빌드"]
+    C -->|성공| D["sooblog.pages.dev 배포"]
+    C -->|실패| E["Build log 확인"]
 ```
 
 ### Cloudflare Pages 빌드 설정 (이미 적용됨)
@@ -213,14 +217,10 @@ flowchart LR
 
 ### 🔧 자질구레한 마무리
 
-- [x] [`src/constants.ts`](src/constants.ts) Mail 주소를 실제 이메일로 교체
-- [x] [`public/astropaper-og.jpg`](public/astropaper-og.jpg) 본인 OG 이미지로 교체
 - [ ] [`public/favicon.svg`](public/favicon.svg) / `favicon.ico` 본인 파비콘으로 교체
 
 ### 🚀 기능 확장
 
-- [x] **Mermaid** 다이어그램 통합 (lazy-load)
-- [x] **KaTeX** 수식 통합 (빌드 타임 렌더링)
 - [ ] **Giscus** 댓글 (GitHub Discussions 기반, 무료)
 - [ ] **Cloudflare Web Analytics** 연결 (쿠키리스, 무료)
 

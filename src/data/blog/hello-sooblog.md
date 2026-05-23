@@ -47,10 +47,10 @@ Starting small and adding features only when I actually need them.
 
 ```mermaid
 flowchart LR
-    A[Local edit] -->|git push| B["GitHub: soocloud/blog"]
-    B -->|webhook| C[Cloudflare Pages build]
+    A["Local edit"] -->|git push| B["GitHub: soocloud/blog"]
+    B -->|webhook| C["Cloudflare Pages build"]
     C -->|success| D["sooblog.pages.dev"]
-    C -->|failure| E[Build logs]
+    C -->|failure| E["Build logs"]
 ```
 
 ### Math (KaTeX)
