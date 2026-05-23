@@ -258,7 +258,7 @@ git push
 
 ## 주요 설정 파일
 
-| 파일 | 무엇을 바꿀 때 |
+| 파일 | 수정대상 |
 |---|---|
 | [`src/config.ts`](src/config.ts) | 사이트 제목, 작성자, 설명, 언어, 타임존, OG 이미지 파일명 |
 | [`src/constants.ts`](src/constants.ts) | 헤더·푸터 소셜 링크 (GitHub, Mail 등) |
