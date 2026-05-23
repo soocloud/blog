@@ -1,0 +1,58 @@
+---
+// Giscus comments — GitHub Discussions powered
+// Repo: soocloud/blog · Category: Comments (Announcement)
+---
+
+<section
+  id="giscus-comments"
+  class="mt-8"
+  data-pagefind-ignore
+  aria-label="Comments"
+>
+  <script
+    is:inline
+    src="https://giscus.app/client.js"
+    data-repo="soocloud/blog"
+    data-repo-id="R_kgDOSljmUA"
+    data-category="Comments"
+    data-category-id="DIC_kwDOSljmUM4C9rDx"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="ko"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async></script>
+</section>
+
+<script is:inline>
+  // Sync Giscus iframe theme with site data-theme attribute
+  (function () {
+    const getGiscusTheme = () =>
+      document.documentElement.getAttribute("data-theme") === "dark"
+        ? "dark"
+        : "light";
+
+    const sendTheme = () => {
+      const iframe = document.querySelector(
+        "iframe.giscus-frame"
+      );
+      if (!iframe) return;
+      iframe.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: getGiscusTheme() } } },
+        "https://giscus.app"
+      );
+    };
+
+    // Observe theme attribute changes
+    const observer = new MutationObserver(mutations => {
+      for (const m of mutations) {
+        if (m.attributeName === "data-theme") sendTheme();
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true });
+  })();
+</script>

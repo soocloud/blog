@@ -71,4 +71,19 @@ def testtimer(mytimer: func.TimerRequest) -> None:
 
 2. 예정되지 않은 시간에 실행된 경우
    1. Possible root causes
-      - UseMonitor 에 의한 의도된 동작
+      - UseMonitor 에 의한 의도된 동작 (isPastDue)
+   2. Actions
+      - Application Insights 의 traces 로그에서 IsPastDue 등의 로그가 있었는지 확인해본다. 
+
+## Alert Rule 관련 주의사항
+보통 예정된 시간에 함수 실행이 실패하면, 실패 시 발생하는 로그를 기반으로 Alert Rule 을 구성하는 방법을 생각해볼 수 있다.
+
+다만, 함수 실행 자체가 이루어지지 않은 경우를 대비해, Application Insights 상에 실행을 의미하는 "Executing" 로그가 존재하지 않는 경우를 감지하는 Alert Rule 을 작성하는 데에는 한계가 있다.
+
+예를 들어, Azure Monitor 의 Log Search Alert 는 최대 2일 범위까지만 평가 기간(Evaluation Period)으로 지정할 수 있다.
+따라서, 1주일에 한 번 실행되는 Timer Trigger 에 대해 `ago(7d)` 조건을 사용하여 미실행 여부를 감지하려고 하더라도, Alert Rule 자체의 평가 범위 제한으로 인해 의도한 방식의 감지가 어려울 수 있다.
+
+또한, Timer Trigger 는 플랫폼 재시작, Scale 이벤트, Storage 접근 문제 등의 영향으로 실행 시점이 다소 지연될 수 있으며, 경우에 따라 `isPastDue=true` 상태로 뒤늦게 실행되는 경우도 존재한다.
+
+이러한 특성 때문에, 2일을 초과하는 긴 주기 Timer Trigger 의 미실행 여부를 단순 로그부재 기반 Alert Rule 만으로 완벽하게 감지하는 데에는 구조적인 제약이 존재한다.
+
