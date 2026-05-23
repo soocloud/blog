@@ -22,4 +22,4 @@ Posts are mostly in **English**, with **Korean** and **Japanese** entries when i
 ## Contact
 
 - GitHub: [@soocloud](https://github.com/soocloud)
-- Mail: hello@example.com <!-- TODO: 실제 이메일로 교체 -->
+- Mail: dongsoocloud@gmail.com

@@ -25,7 +25,7 @@ export const SOCIALS: Social[] = [
   },
   {
     name: "Mail",
-    href: "mailto:hello@example.com", // TODO: 실제 이메일로 교체
+    href: "mailto:dongsoocloud@gmail.com",
     linkTitle: `Send an email to ${SITE.title}`,
     icon: IconMail,
   },
