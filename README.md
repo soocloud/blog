@@ -64,7 +64,36 @@ npm run preview
 
 ## 글 작성하기
 
-새 글은 `src/data/blog/<slug>.md` 또는 `.mdx`로 추가합니다.
+새 글은 [`src/data/blog/`](src/data/blog/) 아래에 추가합니다. **이미지 유무에 따라 두 가지 패턴** 중 선택:
+
+| 글 유형 | 권장 구조 | URL |
+|---|---|---|
+| 이미지 **없는** 글 | `src/data/blog/my-post.md` | `/posts/my-post/` |
+| 이미지 **있는** 글 | `src/data/blog/my-post/index.md` + 같은 폴더에 `*.png/.jpg` | `/posts/my-post/` |
+
+### 이미지 있는 글 (폴더 패턴) 예시
+
+```text
+src/data/blog/azure-functions-timertrigger/
+├── index.md
+├── cover.png                ← OG 이미지로 사용
+├── trigger-flow.png
+└── portal-screenshot.png
+```
+
+본문에서 **상대경로**로 참조하면 Astro가 자동으로 리사이즈·WebP 변환·해시 캐싱을 처리합니다:
+
+```markdown
+![Timer trigger 흐름](./trigger-flow.png)
+```
+
+OG 이미지도 같은 방식으로 frontmatter에서:
+
+```yaml
+ogImage: ./cover.png
+```
+
+> ❌ `public/` 폴더의 이미지를 절대경로(`/images/foo.png`)로 참조하면 최적화가 **안 됩니다**. 글 전용 이미지는 항상 글 폴더 안에 두세요.
 
 ### Front matter 템플릿
 
