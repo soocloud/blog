@@ -1,5 +1,5 @@
 export const SITE = {
-  website: "https://blog.pages.dev/", // TODO: Cloudflare Pages 배포 후 실제 URL로 교체
+  website: "https://sooblog.pages.dev/",
   author: "Dongsoo",
   profile: "https://github.com/soocloud",
   desc: "클라우드·AI·웹 개발에 대한 긴 글과 도표 모음 (KO / EN / JA)",
