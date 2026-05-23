@@ -1,85 +1,195 @@
 # SooBlog
 
-Personal tech blog by **Dongsoo** — built with [Astro](https://astro.build/) +
-[AstroPaper](https://github.com/satnaing/astro-paper) v5.5.1,
-deployed on [Cloudflare Pages](https://pages.cloudflare.com/).
+> Personal tech blog by **Dongsoo** — built with Astro, deployed on Cloudflare Pages.
 
-Posts are mainly in English, with occasional Korean / Japanese entries.
+[![Live](https://img.shields.io/badge/live-sooblog.pages.dev-blue)](https://sooblog.pages.dev)
+[![Built with Astro](https://img.shields.io/badge/built%20with-Astro%20v5-orange)](https://astro.build/)
+[![Theme: AstroPaper](https://img.shields.io/badge/theme-AstroPaper%20v5.5.1-7c3aed)](https://github.com/satnaing/astro-paper)
+
+- 🌐 **Live**: <https://sooblog.pages.dev>
+- 📦 **Repo**: <https://github.com/soocloud/blog>
+- 🗣️ **Languages**: English (default), occasionally Korean / Japanese
+- 🕒 **Timezone**: Asia/Tokyo (JST)
 
 ---
+
+## 목차
+
+- [기술 스택](#기술-스택)
+- [로컬 개발](#로컬-개발)
+- [글 작성하기](#글-작성하기)
+- [폴더 구조](#폴더-구조)
+- [주요 설정 파일](#주요-설정-파일)
+- [배포 워크플로우](#배포-워크플로우)
+- [할 일 (TODO)](#할-일-todo)
+- [라이선스 / 크레딧](#라이선스--크레딧)
+
+---
+
+## 기술 스택
+
+| 영역 | 사용 기술 |
+|---|---|
+| 프레임워크 | [Astro](https://astro.build/) v5 (static output) |
+| 테마 | [AstroPaper](https://github.com/satnaing/astro-paper) v5.5.1 |
+| 스타일 | Tailwind CSS v4 |
+| 콘텐츠 | Markdown / MDX + Content Collections |
+| 코드 하이라이트 | Shiki (`min-light` / `night-owl`) |
+| 검색 | [Pagefind](https://pagefind.app/) (정적 클라이언트 검색) |
+| 호스팅 | [Cloudflare Pages](https://pages.cloudflare.com/) (무제한 대역폭, 무료) |
+| CI/CD | GitHub push → Cloudflare 자동 빌드·배포 |
 
 ## 로컬 개발
 
 ```powershell
-npm install        # 최초 1회
-npm run dev        # http://localhost:4321
-npm run build      # 프로덕션 빌드 → dist/
-npm run preview    # 빌드 결과 미리보기
+# 최초 1회만
+npm install
+
+# 개발 서버 (http://localhost:4321)
+npm run dev
+
+# 프로덕션 빌드 → dist/
+npm run build
+
+# 빌드 결과 미리보기
+npm run preview
 ```
 
-> Node.js **22.12+** 필요.
+> **요구사항**: Node.js **22.12+** (Cloudflare 빌드 환경 변수 `NODE_VERSION=22`)
 
-## 글 작성
+## 글 작성하기
 
-새 글은 `src/data/blog/<slug>.md` (또는 `.mdx`)로 추가합니다.
+새 글은 `src/data/blog/<slug>.md` 또는 `.mdx`로 추가합니다.
+
+### Front matter 템플릿
 
 ```markdown
 ---
 author: Dongsoo
-pubDatetime: 2026-05-23T10:00:00+09:00
-title: 제목
-slug: url-slug         # 파일명과 일치시키는 게 가장 깔끔
-featured: false         # 메인 상단 노출 여부
-draft: false            # true면 빌드에서 제외
+pubDatetime: 2026-05-23T10:00:00+09:00   # JST 기준
+title: 글 제목
+slug: url-slug                            # 파일명과 일치시키는 게 가장 깔끔
+featured: false                           # 메인 상단 고정 여부
+draft: false                              # true면 빌드에서 제외
 tags:
   - tag1
   - tag2
-description: 1~2줄 요약. OG/카드 등에 노출.
+description: 1~2줄 요약. OG 카드와 RSS에 노출됩니다.
 ---
 
 본문…
 ```
 
-### 언어 표시 (Korean / Japanese)
+### 다국어 표시 규칙 (임시)
 
-기본 언어는 `en`. 한국어/일본어 글은 태그로 구분합니다.
+기본 사이트 언어는 `en`. 정식 i18n 라우팅(`/ko/`, `/ja/`)은 도입 전이며,
+당분간 **태그**로 구분합니다:
 
-- `tags: [ko, ...]` → 한국어 글
-- `tags: [ja, ...]` → 일본어 글
-- 태그 외에 본문 첫 줄에 언어 배지를 적어두면 검색·아카이브에서 알아보기 쉬움
-
-> 정식 i18n 라우팅(`/ko/`, `/ja/`)이 필요해지면 그때 추가합니다.
-
-## 설정 위치
-
-| 파일 | 내용 |
+| 태그 | 의미 |
 |---|---|
-| `src/config.ts` | 사이트 제목 / 작성자 / 설명 / 기본 언어 / 타임존 |
-| `src/constants.ts` | 헤더·푸터 소셜 링크 |
-| `src/pages/about.md` | About 페이지 |
-| `astro.config.ts` | Astro / Vite / 마크다운 플러그인 |
-| `public/` | 정적 파일 (favicon, OG 이미지 등) |
+| `ko` | 한국어 글 |
+| `ja` | 일본어 글 |
+| (없음) | 영어 글 |
 
-### TODO (배포 후)
+> 필요 시 [`astro:i18n`](https://docs.astro.build/en/recipes/i18n/) 기반 라우팅으로 마이그레이션 예정.
 
-- [ ] `src/config.ts` 의 `website` 를 실제 Cloudflare Pages URL로 교체
-- [ ] `src/constants.ts` Mail 주소를 실제 이메일로 교체
-- [ ] `public/astropaper-og.jpg` 를 본인 OG 이미지로 교체
-- [ ] (선택) `favicon.svg`, `favicon.ico` 교체
+### 배포 흐름 (글 1개 올리기)
 
-## 배포 (Cloudflare Pages)
+```powershell
+# 1) 글 작성
+#    src/data/blog/my-post.md
 
-1. GitHub 저장소 [`soocloud/blog`](https://github.com/soocloud/blog) 에 푸시
-2. Cloudflare Dashboard → **Workers & Pages → Create → Pages → Connect to Git**
-3. 저장소 선택 후 빌드 설정:
-   - **Framework preset**: Astro
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
-   - **Node version**: `22` (환경 변수 `NODE_VERSION=22`)
-4. Deploy → 자동으로 `*.pages.dev` 도메인 발급
-5. 이후 `main` 브랜치에 push 하면 자동 재배포
+# 2) (선택) 로컬 확인
+npm run dev
+
+# 3) 푸시 → Cloudflare가 자동 빌드·배포
+git add .
+git commit -m "post: my new article"
+git push
+```
+
+→ 약 **1~2분 후** <https://sooblog.pages.dev> 에 반영.
+
+## 폴더 구조
+
+```
+.
+├── public/                  # 정적 자산 (favicon, OG 이미지, robots.txt 등)
+├── src/
+│   ├── assets/              # 빌드 시 처리되는 이미지·아이콘
+│   ├── components/          # 재사용 컴포넌트 (.astro)
+│   ├── data/
+│   │   └── blog/            # 📝 글이 여기 들어갑니다 (md / mdx)
+│   ├── layouts/             # 페이지 레이아웃
+│   ├── pages/               # 라우트 (about.md, posts/, tags/ 등)
+│   ├── styles/              # 글로벌 CSS
+│   ├── utils/               # 유틸 함수 (날짜, slugify, OG 생성 등)
+│   ├── config.ts            # ⭐ 사이트 메타 설정
+│   ├── constants.ts         # ⭐ 소셜 링크
+│   └── content.config.ts    # 콘텐츠 컬렉션 스키마
+├── astro.config.ts          # Astro / Vite / 마크다운 설정
+├── package.json
+└── tsconfig.json
+```
+
+## 주요 설정 파일
+
+| 파일 | 무엇을 바꿀 때 |
+|---|---|
+| [`src/config.ts`](src/config.ts) | 사이트 제목, 작성자, 설명, 언어, 타임존, OG 이미지 파일명 |
+| [`src/constants.ts`](src/constants.ts) | 헤더·푸터 소셜 링크 (GitHub, Mail 등) |
+| [`src/pages/about.md`](src/pages/about.md) | About 페이지 본문 |
+| [`astro.config.ts`](astro.config.ts) | Astro 통합, Vite 플러그인, Shiki 테마 |
+| [`public/`](public/) | favicon, OG 기본 이미지, robots.txt |
+
+## 배포 워크플로우
+
+```mermaid
+flowchart LR
+    A[로컬 편집] -->|git push| B[GitHub: soocloud/blog]
+    B -->|webhook| C[Cloudflare Pages 빌드]
+    C -->|성공| D[sooblog.pages.dev 배포]
+    C -->|실패| E[Build log 확인]
+```
+
+### Cloudflare Pages 빌드 설정 (이미 적용됨)
+
+| 항목 | 값 |
+|---|---|
+| Production branch | `main` |
+| Framework preset | Astro |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Environment variable | `NODE_VERSION=22` |
+
+> 미리보기 배포: `main` 외 브랜치/PR도 자동으로 임시 URL 발급됨.
+
+## 할 일 (TODO)
+
+### 🔧 자질구레한 마무리
+
+- [ ] [`src/constants.ts`](src/constants.ts) Mail 주소를 실제 이메일로 교체
+- [ ] [`public/astropaper-og.jpg`](public/astropaper-og.jpg) 본인 OG 이미지로 교체
+- [ ] [`public/favicon.svg`](public/favicon.svg) / `favicon.ico` 본인 파비콘으로 교체
+
+### 🚀 기능 확장
+
+- [ ] **Mermaid** 다이어그램 통합 (`rehype-mermaid`)
+- [ ] **KaTeX** 수식 통합
+- [ ] **Giscus** 댓글 (GitHub Discussions 기반, 무료)
+- [ ] **Cloudflare Web Analytics** 연결 (쿠키리스, 무료)
+
+### 🌐 다국어 본격 도입
+
+- [ ] `/ko/`, `/ja/` URL 라우팅
+- [ ] 언어 전환 UI
+- [ ] `hreflang` 메타 태그
+
+### 🏷️ 도메인 (선택)
+
+- [ ] 커스텀 도메인 구매 + Cloudflare DNS 연결
 
 ## 라이선스 / 크레딧
 
-- 테마: [AstroPaper](https://github.com/satnaing/astro-paper) by Sat Naing (MIT)
-- 글 콘텐츠: © Dongsoo. 별도 표기 없는 한 무단 전재 금지.
+- 테마: [AstroPaper](https://github.com/satnaing/astro-paper) by **Sat Naing** — MIT License
+- 글 콘텐츠: © Dongsoo. 별도 표기가 없는 한 무단 전재 금지.
