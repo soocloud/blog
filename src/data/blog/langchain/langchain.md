@@ -1,7 +1,7 @@
 ---
 author: Dongsoo
-pubDatetime: 2026-05-23T01:00:00+09:00
-title: LangChain/LangGraph Tutorial
+pubDatetime: 2026-05-24T11:00:00+09:00
+title: LangChain/LangGraph RAG Tutorial
 featured: false
 draft: false
 category: ai
@@ -63,6 +63,38 @@ ai_message = llm.invoke("한국의 수도는?")
 ```
 
 ## 소득세법으로 RAG 하기
+1. 소득세법 word 파일 다운로드하고, 파일형식을 docx 로 바꾸기 (rtf가 아님)
+2. 문서내용을 읽는다. (by [Langchain DocumentLoader](https://docs.langchain.com/oss/python/integrations/document_loaders/unstructured_file))
+
+```python
+%pip install --upgrade --quiet "unstructured[docx]" langchain-community
+from langchain_community.document_loaders import UnstructuredWordDocumentLoader
+
+loader = UnstructuredWordDocumentLoader("./text.docx")
+document = loader.load()
+#print(document[0].page_content) -> 길이가 1인 리스트로 반환됨. document[0]은 Document 객체임. document[0].page_content는 text.docx 파일의 내용을 문자열로 반환함.
+```
+   - `langchain_community` 는 내부적으로 `unstructrued`를 호출한다. 따라서 unstructured 가 설치되어있지 않으면 런타임 에러.
+   - `unstructured` : 실제 docx 파일을 열어서 텍스트/표/제목을 뽑아냄
+   - `langchain_community` : 위의 unstructured 엔진을 LangChain 표준 규격(다른 파일형식과 동일하게) 에 맞게 감싸줘서 Langchain RAG 파이프라인에 들어갈 수 있게 함. [^1]
+
+3. 문서를 쪼갠다. (by [Recursive Text Spliiter](https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter))
+    - Resursive 는 텍스트를 더 다양한 인자를 기준으로 쪼갤 수 있다.
+    - chunk_size : 1개의 chunk 가 가질 토큰의 사이즈 (텍스트 크기)
+    - chunk_overlap : 위 chunk 가 조금씩 겹치게해서, 각 chunk 간의 유사성을 파악할 수 있게함(정확도 향상) 
+```python 
+%pip install -qU langchain-text-splitters
+from langchain_community.document_loaders import UnstructuredWordDocumentLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200) 
+
+loader = UnstructuredWordDocumentLoader("./text.docx")
+document_list = loader.load_and_split(text_splitter=text_splitter) 
+```
+
+4. 임베딩
+
 
 
 
@@ -73,6 +105,39 @@ ai_message = llm.invoke("한국의 수도는?")
 1. 문서를 chunking 하는 것도 어렵다.
 데이터를 가져오는 게 어렵고, 잘 가져오더라도, 전달하는 게 또 어렵다.
 
+------------------------------
 
+
+[^1]: 해당 내용을 그래프로 나타내면 아래와 같다.
+
+    ```mermaid
+    flowchart TB
+        A["tax.docx<br/>(원본 문서)"] --> B
+        subgraph ENGINE["<span style='color:#000000'>unstructured 패키지</span>"]
+            B["partition_docx()<br/>실제 파싱 엔진"]
+            B --> C["raw elements<br/>(Title, NarrativeText, Table...)"]
+        end
+
+        C --> D
+
+        subgraph ADAPTER["<span style='color:#000000'>langchain-community 패키지</span>"]
+            D["UnstructuredWordDocumentLoader<br/>(어댑터/래퍼)"]
+            D --> E["List[Document]<br/>page_content + metadata"]
+        end
+
+        E --> F
+
+        subgraph RAG["<span style='color:#000000'>  LangChain RAG 파이프라인</span>"]
+            direction TB
+            F["TextSplitter<br/>(청크 분할)"] --> G["Embedding<br/>(벡터화)"]
+            G --> H["VectorStore<br/>(저장)"]
+            H --> I["Retriever<br/>(유사도 검색)"]
+            I --> J["LLM<br/>(답변 생성)"]
+        end
+
+        style ENGINE fill:#fff4e6,stroke:#ff9800
+        style ADAPTER fill:#e3f2fd,stroke:#2196f3
+        style RAG fill:#f3e5f5,stroke:#9c27b0
+    ```
 
 
