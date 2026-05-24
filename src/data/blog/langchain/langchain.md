@@ -94,50 +94,136 @@ document_list = loader.load_and_split(text_splitter=text_splitter)
 ```
 
 4. 임베딩
+```python
+from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
+
+load_dotenv()
+embeddings = OpenAIEmbeddings(model="text-embedding-3-large") #디폴트 모델 : text-embedding-ada-002
+```
+
+5. VectorStore 에 저장 (by [Chroma](https://docs.langchain.com/oss/python/integrations/vectorstores/chroma))
+```python
+%pip install -qU langchain-chroma
+from langchain_chroma import Chroma
+database = Chroma.from_documents(documents=document_list, embedding=embeddings)
+```
+   - Chroma : Vector Database, Inmemory 라서 간단하다.
+   - 만약 in-memory 이기 때문에 embedding 한 데이터를 persist directory 에 저장하고 싶다면, 아래와 같이 설정 가능하다.
+```python
+from langchain_chroma import Chroma
+database = Chroma.from_documents(documents=document_list, embedding=embeddings, persist_directory="./chroma_db", collection_name="tax_documents")
+#./chroma_db 에 embedding  결과를 저장한다.
+#저장된 컬렉션 명은 tax_documents가 된다.
+```
 
 
+6. 유사도 검색으로 Retrieval -> LLM 에 쿼리 
+```python
+query = "연봉 1억원인 직장인의 소득세는 얼마인가요?"
+retrieved_docs = database.similarity_search(query, k=3) #k는 반환할 유사한 문서의 개수
+
+from langchain_openai import ChatOpenAI
+llm = ChatOpenAI(model="gpt-4o") #디폴트 모델 : gpt-3.5-turbo
+
+prompt = f"""
+[Identity] 
+- 당신은 세금 전문가입니다. 
+- [Context] 를 참고해서 사용자의 질문에 답변해 주세요. 
+
+[Context]
+{retrieved_docs}
+
+Question: {query}
+"""
+
+ai_message = llm.invoke(prompt)
+print(ai_message.content)
+```
 
 
- 
+## Improve Retrieval
+1. 검증된 프롬프트를 활용하는 방법
+```python
+%pip install -qU langchainhub langsmith
+from langsmith import Client
+client = Client()
+prompt = client.pull_prompt(  #LangSmith에서 프롬프트를 가져오는 메서드
+    "rlm/rag-prompt",
+    include_model=False,
+    dangerously_pull_public_prompt=True, #공개된 프롬프트를 가져올 때 경고 메시지를 표시하지 않도록 설정
+)
+```
+(반환된 prompt 의 template 부분 발췌)
+```
+template="You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\nQuestion: {question} \nContext: {context} \nAnswer:"
+```
+
+2. QA 체인만들기, LCEL 적용
+```python
+from dotenv import load_dotenv
+from langchain_chroma import Chroma
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+load_dotenv()
+embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+
+# 1. 벡터 DB 다시 열기
+database = Chroma(
+    collection_name="tax_documents",
+    persist_directory="./chroma_db",
+    embedding_function=embeddings,
+)
+
+# 2. Retriever — k 를 10 으로 늘려 세율표 청크가 잡힐 확률 ↑
+retriever = database.as_retriever(search_kwargs={"k": 10})
+
+# 3. 한국어 RAG 프롬프트 (영어 rlm/rag-prompt 대체 — 보수적 거절 줄임)
+prompt = ChatPromptTemplate.from_template("""
+당신은 한국 세무 전문가입니다. 아래 [참고 문서]를 근거로 사용자의 질문에 답변하세요.
+- 세율, 금액, 조건 등이 [참고 문서]에 있으면 구체적 수치와 계산 과정을 단계별로 보여주세요.
+- 부분 정보만 있어도 그 범위 안에서 최대한 답변하세요.
+- 정말로 관련 정보가 전혀 없을 때만 "참고 문서에서 해당 정보를 찾을 수 없습니다"라고 답하세요.
+
+[참고 문서]
+{context}
+
+[질문]
+{question}
+""")
+
+# 4. LLM
+llm = ChatOpenAI(model="gpt-4o")
+
+# 5. 검색된 Document 리스트를 하나의 문자열로 합치는 헬퍼
+def format_docs(docs):
+    return "\n\n".join(d.page_content for d in docs)
+
+# 6. LCEL 체인 조립: 질문 → (검색+질문 dict) → 프롬프트 → LLM → 텍스트
+rag_chain = (
+    {
+        "context": retriever | format_docs,
+        "question": RunnablePassthrough(),
+    }
+    | prompt
+    | llm
+    | StrOutputParser()
+)
 
 
-## 주의사항
-1. 문서를 chunking 하는 것도 어렵다.
-데이터를 가져오는 게 어렵고, 잘 가져오더라도, 전달하는 게 또 어렵다.
+query = "연봉 1억원인 직장인의 소득세는 얼마인가요?"
+
+print("=== 답변 ===")
+answer = rag_chain.invoke(query)
+print(answer)
+```
 
 ------------------------------
 
 
 [^1]: 해당 내용을 그래프로 나타내면 아래와 같다.
-
-    ```mermaid
-    flowchart TB
-        A["tax.docx<br/>(원본 문서)"] --> B
-        subgraph ENGINE["<span style='color:#000000'>unstructured 패키지</span>"]
-            B["partition_docx()<br/>실제 파싱 엔진"]
-            B --> C["raw elements<br/>(Title, NarrativeText, Table...)"]
-        end
-
-        C --> D
-
-        subgraph ADAPTER["<span style='color:#000000'>langchain-community 패키지</span>"]
-            D["UnstructuredWordDocumentLoader<br/>(어댑터/래퍼)"]
-            D --> E["List[Document]<br/>page_content + metadata"]
-        end
-
-        E --> F
-
-        subgraph RAG["<span style='color:#000000'>  LangChain RAG 파이프라인</span>"]
-            direction TB
-            F["TextSplitter<br/>(청크 분할)"] --> G["Embedding<br/>(벡터화)"]
-            G --> H["VectorStore<br/>(저장)"]
-            H --> I["Retriever<br/>(유사도 검색)"]
-            I --> J["LLM<br/>(답변 생성)"]
-        end
-
-        style ENGINE fill:#fff4e6,stroke:#ff9800
-        style ADAPTER fill:#e3f2fd,stroke:#2196f3
-        style RAG fill:#f3e5f5,stroke:#9c27b0
-    ```
-
+![alt text](1.png)
 
