@@ -1,14 +1,13 @@
 ---
 author: Dongsoo
 pubDatetime: 2026-05-24T11:00:00+09:00
-title: LangChain/LangGraph RAG Tutorial
+title: LangChain RAG Tutorial
 featured: false
 draft: false
 category: ai
 tags:
   - Langchain
-  - LangGraph
-description: LangChain/LangGraph 로 RAG 앱 개발
+description: LangChain 로 RAG 앱 개발
 ---
 
 ## RAG
