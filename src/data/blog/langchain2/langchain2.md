@@ -58,12 +58,13 @@ result = agent.invoke({
 
 ## Chain / Multi-Chain
 1. Chain?
+
 ```mermaid
 flowchart LR
-    A[입력 변수] --> B[프롬프트 템플릿]
-    B --> C[LLM 응답]
-    C --> D[출력 Parser]
-    D --> E[결과 반환]
+    A["입력 변수"] --> B["프롬프트 템플릿"]
+    B --> C["LLM 응답"]
+    C --> D["출력 Parser"]
+    D --> E["결과 반환"]
 ```
 
 2. 예시
