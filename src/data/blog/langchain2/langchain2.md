@@ -1,7 +1,7 @@
 ---
 author: Dongsoo
 pubDatetime: 2026-05-26T23:00:00+09:00
-title: LangChain 1.0 Tutorial
+title: LangChain 1.0 Tutorial - part1
 featured: false
 draft: false
 category: ai
@@ -56,6 +56,40 @@ result = agent.invoke({
    - 진입점이 create_agent 로 됨.
 
 
-## Chain?
+## Chain / Multi-Chain
+1. Chain?
+```mermaid
+flowchart LR
+    A[입력 변수] --> B[프롬프트 템플릿]
+    B --> C[LLM 응답]
+    C --> D[출력 Parser]
+    D --> E[결과 반환]
+```
 
+2. 예시
+```python
+from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
+load_dotenv()
+
+# Input
+topic = input("What topic do you want to learn about?")
+
+# Prompt template
+prompt = ChatPromptTemplate.from_template(
+    "Explain this {topic} simply."
+)
+
+# LLM
+llm = init_chat_model("gpt-4o-mini")
+
+# Chain(LCEL)
+chain = prompt | llm | StrOutputParser()
+
+# Result
+response = chain.invoke({"topic": topic})
+print(response)
+```
