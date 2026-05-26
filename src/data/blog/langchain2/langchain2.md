@@ -1,6 +1,6 @@
 ---
 author: Dongsoo
-pubDatetime: 2026-05-26T23:00:00+09:00
+pubDatetime: 2026-05-26T00:00:00+09:00
 title: LangChain 1.0 Tutorial - part1
 featured: false
 draft: false
