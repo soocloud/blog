@@ -14,21 +14,17 @@ export function remarkMermaid() {
     visit(tree, "code", (node, index, parent) => {
       if (!parent || index === undefined) return;
       if (node.lang !== "mermaid") return;
+      const source = node.value ?? "";
+      // Only escape characters that would break out of <pre> or the attribute.
+      // We intentionally do NOT escape `>` because mermaid syntax relies on
+      // `-->`, `==>`, etc., and some mermaid versions choke when the textContent
+      // is reconstituted from HTML entities (timing/whitespace edge cases).
+      const inner = source.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+      const attr = inner.replace(/"/g, "&quot;").replace(/\n/g, "&#10;");
       parent.children[index] = {
         type: "html",
-        value: `<pre class="mermaid" data-source="${escapeAttr(node.value ?? "")}">${escapeHtml(node.value ?? "")}</pre>`,
+        value: `<pre class="mermaid" data-source="${attr}">${inner}</pre>`,
       };
     });
   };
-}
-
-function escapeHtml(s) {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function escapeAttr(s) {
-  return escapeHtml(s).replace(/"/g, "&quot;").replace(/\n/g, "&#10;");
 }
