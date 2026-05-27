@@ -1,7 +1,7 @@
 ---
 author: Dongsoo
 pubDatetime: 2026-05-26T00:00:00+09:00
-title: LangChain1.0 Tutorial - 1.Chain
+title: LangChain 1.0 Tutorial - 1.Chain
 featured: false
 draft: false
 category: ai
