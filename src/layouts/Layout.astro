@@ -142,7 +142,12 @@ const structuredData = {
       - Picks light/dark theme based on the current `data-theme` on <html>.
     -->
     <script>
+      let mermaidRunning: Promise<void> | null = null;
       async function renderMermaid() {
+        // Coalesce concurrent calls (initial + astro:page-load can race and
+        // cause a brief "Syntax error" flash when both invoke mermaid.run on
+        // the same node before data-processed is set).
+        if (mermaidRunning) return mermaidRunning;
         const nodes = document.querySelectorAll<HTMLElement>(
           "pre.mermaid:not([data-processed])"
         );
@@ -155,7 +160,10 @@ const structuredData = {
             : "default";
 
         mermaid.initialize({ startOnLoad: false, theme, securityLevel: "loose" });
-        await mermaid.run({ nodes: Array.from(nodes) });
+        mermaidRunning = mermaid.run({ nodes: Array.from(nodes) }).finally(() => {
+          mermaidRunning = null;
+        });
+        await mermaidRunning;
       }
 
       // initial load
