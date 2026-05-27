@@ -159,10 +159,22 @@ const structuredData = {
             ? "dark"
             : "default";
 
-        mermaid.initialize({ startOnLoad: false, theme, securityLevel: "loose" });
-        mermaidRunning = mermaid.run({ nodes: Array.from(nodes) }).finally(() => {
-          mermaidRunning = null;
+        mermaid.initialize({
+          startOnLoad: false,
+          theme,
+          securityLevel: "loose",
+          // Don't inject the bomb "Syntax error" SVG on transient first-pass
+          // failures; we'd rather show nothing and let a retry succeed.
+          suppressErrorRendering: true,
         });
+        mermaidRunning = mermaid
+          .run({ nodes: Array.from(nodes) })
+          .catch(() => {
+            // Swallow parse errors; retry on next trigger (theme change, etc.)
+          })
+          .finally(() => {
+            mermaidRunning = null;
+          });
         await mermaidRunning;
       }
 
