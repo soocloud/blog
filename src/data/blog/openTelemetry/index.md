@@ -9,22 +9,16 @@ tags:
 ---
 
 # Intro
-Azure Functions 는 Language Woker process 와 host process 양 쪽에서 함수 실행에 대한 Telemetry 데이터 (로그 등)을 생성한다. 둘 다 기본적(by default)으로 Application Insights SDK 를 사용해서 Application Insights (AI) 로 보낸다. 
-한편, AI SDK 가 아닌, OpenTelemetry(OTEL) 를 사용해서 Telemetry 데이터를 보내는 방식이 존재한다.
-이번 글에서는 그 방식의 설정방법과, 실제 로그 상에서 어떻게 달라지는지를 보이려한다. 
+Azure Functions 는 Language Woker process 와 host process 각각에서 함수 실행에 대한 Telemetry 데이터 (로그 등)을 생성한다. 둘 다 기본적(by default)으로 Application Insights SDK (AI SDK) 를 사용해서 Application Insights 로 보낸다. 
+하지만, 이 방식은 종종 인스턴스의 재기동 등의 동작으로 누락되는 경우가 있다.
+이에 대처하기 위해서 AI SDK 가 아닌, OpenTelemetry(OTEL) 를 사용해서 Telemetry 데이터를 보내는 방식을 설명해보고자 한다.
 
-이때 Host 와 Language worker 프로세스 각각에 대해서 Application Insights SDK 가 아니라 OTEL 를 사용하도록 설정할 수 있다. 
 * 둘 다 설정하거나, 한쪽만 설정해서 한쪽은 Applicaiton Insights SDK, 다른 쪽은 OTEL을 사용하도록 설정할 수 있다.
 
-traces 테이블에서보는 host 수준 로그 예시
-![alt text](image-2.png)
-app 수준 로그 예시
-![alt text](image-1.png)
+# 장점
+1. OpenTelemetry 형식이라서 AI 외에도 OpenTelemetry 를 호환하는 다른 엔드포인트로도 보낼 수 있다.
+2. 
 
-
-
-
-  // "telemetryMode": "OpenTelemetry",
 # 방법
 1. Host process 에 대해 설정 
 (Host 레벨에서만 OTEL, Language Woker 는 여전히 AI SDK.)
@@ -48,9 +42,7 @@ host.json에 아래 추가
 
 
 
-# 장점
-1. OpenTelemetry 형식이라서 AI 외에도 OpenTelemetry 를 호환하는 다른 엔드포인트로도 보낼 수 있다.
-2. 
+
 
 
 
